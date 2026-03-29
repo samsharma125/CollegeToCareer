@@ -41,7 +41,7 @@ export default function Sidebar() {
         ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <h2 className="text-xl font-bold mb-6">
-          UnivSync<span className="text-blue-400">AI</span>
+          CT<span className="text-blue-400">C</span>
         </h2>
 
        <nav className="flex flex-col gap-4 text-sm">
