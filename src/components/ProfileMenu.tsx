@@ -116,13 +116,25 @@ export default function ProfileMenu() {
           </div>
 
           {/* Logout */}
-          <button
-            onClick={logout}
-            className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-red-600/80 transition"
-          >
-            <LogOut className="w-4 h-4" />
-            Logout
-          </button>
+         <button
+  onClick={() => {
+    setOpen(false);
+    router.push("/profile");
+  }}
+  className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-neutral-800 transition"
+>
+  <User className="w-4 h-4" />
+  View Profile
+</button>
+
+{/* Logout */}
+<button
+  onClick={logout}
+  className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-red-600/80 transition"
+>
+  <LogOut className="w-4 h-4" />
+  Logout
+</button>
         </div>
       )}
     </div>
