@@ -58,73 +58,110 @@ export default function ResumeBuilder() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-5">
+    <div className="min-h-screen bg-gradient-to-br from-black via-neutral-950 to-black text-white p-6">
+      <div className="max-w-4xl mx-auto space-y-8">
 
-      <h1 className="text-3xl font-bold">ATS Resume Builder</h1>
+        {/* HEADER */}
+        <div>
+          <h1 className="text-3xl font-bold">
+            ATS Resume Builder
+          </h1>
+          <p className="text-gray-400 text-sm mt-1">
+            Build a professional resume in seconds
+          </p>
+        </div>
 
-      <input
-        name="name"
-        placeholder="Full Name"
-        onChange={handleChange}
-        className="w-full p-3 rounded bg-slate-800"
-      />
+        {/* FORM CARD */}
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 space-y-6">
 
-      <input
-        name="email"
-        placeholder="Email"
-        onChange={handleChange}
-        className="w-full p-3 rounded bg-slate-800"
-      />
+          {/* PERSONAL INFO */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Personal Info</h2>
 
-      <input
-        name="phone"
-        placeholder="Phone"
-        onChange={handleChange}
-        className="w-full p-3 rounded bg-slate-800"
-      />
+            <input
+              name="name"
+              placeholder="Full Name"
+              onChange={handleChange}
+              className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+            />
 
-      <input
-        name="linkedin"
-        placeholder="LinkedIn URL"
-        onChange={handleChange}
-        className="w-full p-3 rounded bg-slate-800"
-      />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <input
+                name="email"
+                placeholder="Email"
+                onChange={handleChange}
+                className="p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+              />
+              <input
+                name="phone"
+                placeholder="Phone"
+                onChange={handleChange}
+                className="p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+              />
+            </div>
 
-      <textarea
-        name="skills"
-        placeholder="Skills (Python, React, SQL...)"
-        onChange={handleChange}
-        className="w-full p-3 rounded bg-slate-800"
-      />
+            <input
+              name="linkedin"
+              placeholder="LinkedIn URL"
+              onChange={handleChange}
+              className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+            />
+          </div>
 
-      <textarea
-        name="education"
-        placeholder="Education"
-        onChange={handleChange}
-        className="w-full p-3 rounded bg-slate-800"
-      />
+          {/* SKILLS */}
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Skills</h2>
+            <textarea
+              name="skills"
+              placeholder="Python, React, SQL..."
+              onChange={handleChange}
+              className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+            />
+          </div>
 
-      <textarea
-        name="experience"
-        placeholder="Experience"
-        onChange={handleChange}
-        className="w-full p-3 rounded bg-slate-800"
-      />
+          {/* EDUCATION */}
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Education</h2>
+            <textarea
+              name="education"
+              placeholder="Your education details..."
+              onChange={handleChange}
+              className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+            />
+          </div>
 
-      <textarea
-        name="projects"
-        placeholder="Projects"
-        onChange={handleChange}
-        className="w-full p-3 rounded bg-slate-800"
-      />
+          {/* EXPERIENCE */}
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Experience</h2>
+            <textarea
+              name="experience"
+              placeholder="Your work experience..."
+              onChange={handleChange}
+              className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+            />
+          </div>
 
-      <button
-        onClick={downloadPDF}
-        className="bg-blue-600 px-6 py-3 rounded font-semibold"
-      >
-        Download ATS Resume
-      </button>
+          {/* PROJECTS */}
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Projects</h2>
+            <textarea
+              name="projects"
+              placeholder="Your projects..."
+              onChange={handleChange}
+              className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+            />
+          </div>
 
+          {/* BUTTON */}
+          <button
+            onClick={downloadPDF}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 transition shadow-lg font-semibold"
+          >
+            Download ATS Resume
+          </button>
+
+        </div>
+      </div>
     </div>
   );
 }

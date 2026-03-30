@@ -75,20 +75,26 @@ export default function AIPage() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-gray-950 via-black to-gray-900 text-white">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-black via-neutral-950 to-black text-white">
 
-      {/* Header */}
-      <div className="p-3 text-center text-base sm:text-lg font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 shadow-md">
-        🤖 AI Assistant
+      {/* 🔥 HEADER */}
+      <div className="px-6 py-4 border-b border-white/10 bg-white/5 backdrop-blur-xl flex items-center justify-between">
+        <h1 className="text-lg font-semibold">
+          🤖 AI Assistant
+        </h1>
+
+        <span className="text-xs px-3 py-1 rounded-full bg-white/10 border border-white/10">
+          Teacher AI
+        </span>
       </div>
 
-      {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-3">
+      {/* 💬 CHAT AREA */}
+      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
 
         {messages.length === 0 && (
-          <p className="text-center text-gray-400 text-sm">
-            Ask anything 📚
-          </p>
+          <div className="text-center text-gray-400 text-sm mt-10">
+            Ask anything about assignments, students, or concepts 📚
+          </div>
         )}
 
         {messages.map((msg, i) => (
@@ -99,10 +105,10 @@ export default function AIPage() {
             }`}
           >
             <div
-              className={`max-w-[85%] sm:max-w-[70%] px-3 py-2 rounded-2xl text-sm ${
+              className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm backdrop-blur-xl border ${
                 msg.role === "user"
-                  ? "bg-gradient-to-r from-blue-600 to-cyan-500"
-                  : "bg-gray-800 border border-gray-700"
+                  ? "bg-gradient-to-r from-indigo-500 to-purple-600 border-transparent shadow-lg"
+                  : "bg-white/5 border-white/10"
               }`}
             >
               {msg.text}
@@ -112,42 +118,43 @@ export default function AIPage() {
 
         {loading && (
           <div className="text-gray-400 text-xs animate-pulse">
-            AI typing...
+            AI is thinking...
           </div>
         )}
 
         <div ref={bottomRef}></div>
       </div>
 
-      {/* Input (Sticky Bottom) */}
-      <div className="sticky bottom-0 p-2 bg-black/80 backdrop-blur border-t border-gray-800">
+      {/* ✨ INPUT BAR */}
+      <div className="p-4 border-t border-white/10 bg-white/5 backdrop-blur-xl">
 
-        <div className="flex items-center gap-2 bg-gray-900 border border-gray-700 rounded-full px-3 py-2">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10">
 
+          {/* INPUT */}
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             className="flex-1 bg-transparent outline-none text-sm placeholder-gray-400"
-            placeholder="Ask... "
+            placeholder="Ask something..."
           />
 
-          {/* 🎤 Mic */}
+          {/* 🎤 MIC */}
           <button
             onClick={startListening}
-            className={`p-2 rounded-full ${
+            className={`p-2 rounded-xl transition ${
               listening
                 ? "bg-red-500 animate-pulse"
-                : "bg-gray-700"
+                : "bg-white/10 hover:bg-white/20"
             }`}
           >
             🎤
           </button>
 
-          {/* Send */}
+          {/* SEND */}
           <button
             onClick={sendMessage}
-            className="p-2 bg-indigo-600 rounded-full"
+            className="p-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 transition shadow-lg"
           >
             ➤
           </button>

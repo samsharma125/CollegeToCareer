@@ -36,7 +36,6 @@ export default function ProfileMenu() {
     loadProfile();
   }, []);
 
-  // ✅ Close on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -61,31 +60,35 @@ export default function ProfileMenu() {
     router.push("/login");
   };
 
+  const initial = name?.charAt(0)?.toUpperCase() || "U";
+
   return (
     <div ref={menuRef} className="relative">
-      
-      {/* 🔥 PREMIUM PROFILE BUTTON */}
+
+      {/* 🔥 BUTTON */}
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="
-          flex items-center gap-2
-          px-3 py-2
-          rounded-xl
-          bg-neutral-900/80
-          border border-neutral-700
-          hover:bg-neutral-800
-          hover:border-neutral-600
+          flex items-center gap-3
+          px-3 py-2 rounded-xl
+          bg-white/5 border border-white/10
+          backdrop-blur-xl
+          hover:bg-white/10
           transition-all duration-200
-          backdrop-blur
         "
       >
-        {/* 👤 Avatar */}
-        <div className="w-8 h-8 rounded-full bg-neutral-700 flex items-center justify-center">
-          <User className="w-4 h-4 text-neutral-300" />
+        {/* AVATAR */}
+        <div className="
+          w-9 h-9 rounded-full
+          bg-gradient-to-br from-indigo-500 to-purple-600
+          flex items-center justify-center
+          text-white text-sm font-semibold
+        ">
+          {initial}
         </div>
 
-        {/* 🖥 Desktop Info */}
-        <div className="hidden sm:flex flex-col items-start leading-tight">
+        {/* INFO */}
+        <div className="hidden sm:flex flex-col leading-tight">
           <span className="text-sm font-medium text-white">
             {name || "User"}
           </span>
@@ -94,7 +97,7 @@ export default function ProfileMenu() {
           </span>
         </div>
 
-        {/* ⬇ Arrow */}
+        {/* ARROW */}
         <ChevronDown
           className={`w-4 h-4 text-neutral-400 transition-transform ${
             open ? "rotate-180" : ""
@@ -104,37 +107,72 @@ export default function ProfileMenu() {
 
       {/* 🔽 DROPDOWN */}
       {open && (
-        <div className="absolute right-0 mt-2 w-64 rounded-xl bg-neutral-900/95 backdrop-blur border border-neutral-700 shadow-2xl z-50 overflow-hidden">
-          
-          {/* Profile Info */}
-          <div className="px-4 py-3 border-b border-neutral-800">
-            <p className="font-semibold text-white">{name || "User"}</p>
-            <p className="text-sm text-neutral-400 truncate">{email}</p>
-            <p className="text-xs mt-1 text-blue-400 capitalize">
+        <div className="
+          absolute right-0 mt-3 w-64
+          rounded-2xl
+          bg-neutral-950/90
+          backdrop-blur-2xl
+          border border-white/10
+          shadow-[0_10px_40px_rgba(0,0,0,0.6)]
+          overflow-hidden
+          z-50
+        ">
+
+          {/* PROFILE */}
+          <div className="px-5 py-4 border-b border-white/5">
+            <p className="text-sm font-semibold text-white">
+              {name || "User"}
+            </p>
+            <p className="text-xs text-neutral-400 truncate">
+              {email}
+            </p>
+            <p className="text-xs mt-1 text-indigo-400 capitalize">
               {role}
             </p>
           </div>
 
-          {/* Logout */}
-         <button
-  onClick={() => {
-    setOpen(false);
-    router.push("/profile");
-  }}
-  className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-neutral-800 transition"
->
-  <User className="w-4 h-4" />
-  View Profile
-</button>
+          {/* MENU */}
+          <div className="py-1">
 
-{/* Logout */}
-<button
-  onClick={logout}
-  className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-red-600/80 transition"
->
-  <LogOut className="w-4 h-4" />
-  Logout
-</button>
+            {/* VIEW PROFILE */}
+            <button
+              onClick={() => {
+                setOpen(false);
+                router.push("/profile");
+              }}
+              className="
+                w-full flex items-center gap-3
+                px-5 py-3 text-left
+                hover:bg-white/5
+                transition
+              "
+            >
+              <User className="w-4 h-4 text-indigo-400" />
+              <span className="text-sm text-neutral-200">
+                Profile
+              </span>
+            </button>
+
+            {/* DIVIDER */}
+            <div className="h-px bg-white/5 my-1" />
+
+            {/* LOGOUT */}
+            <button
+              onClick={logout}
+              className="
+                w-full flex items-center gap-3
+                px-5 py-3 text-left
+                hover:bg-red-500/10
+                transition
+              "
+            >
+              <LogOut className="w-4 h-4 text-red-400" />
+              <span className="text-sm text-red-400">
+                Logout
+              </span>
+            </button>
+
+          </div>
         </div>
       )}
     </div>

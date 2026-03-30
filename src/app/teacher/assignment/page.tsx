@@ -22,17 +22,11 @@ export default function CreateAssignment() {
   }, []);
 
   const loadSubjects = async () => {
-    const { data, error } = await supabase.from("subjects").select("*");
-
-    if (error) {
-      console.error("Subjects error:", error);
-    } else {
-      setSubjects(data || []);
-    }
+    const { data } = await supabase.from("subjects").select("*");
+    setSubjects(data || []);
   };
 
   const createAssignment = async () => {
-    // ✅ Validation
     if (
       !title ||
       !subjectId ||
@@ -46,18 +40,9 @@ export default function CreateAssignment() {
       return;
     }
 
-    // ✅ Check logged-in user
-    const { data: userData, error: userError } =
-      await supabase.auth.getUser();
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) return alert("Login required");
 
-    if (userError || !userData.user) {
-      alert("❌ You must be logged in");
-      return;
-    }
-
-    const teacherId = userData.user.id;
-
-    // ✅ INSERT ASSIGNMENT
     const { data, error } = await supabase
       .from("assignments")
       .insert([
@@ -65,7 +50,7 @@ export default function CreateAssignment() {
           title,
           description,
           subject_id: subjectId,
-          teacher_id: teacherId,
+          teacher_id: userData.user.id,
           due_date: dueDate,
           option_a: optionA,
           option_b: optionB,
@@ -75,33 +60,19 @@ export default function CreateAssignment() {
         },
       ])
       .select()
-      .single(); // 🔥 IMPORTANT
+      .single();
 
-    console.log("INSERT DATA:", data);
-    console.log("INSERT ERROR:", error);
+    if (error) return alert(error.message);
 
-    if (error) {
-      alert(`❌ Error: ${error.message}`);
-      return;
-    }
+    await supabase.from("notifications").insert({
+      title: `📝 ${title} assignment uploaded`,
+      type: "assignment",
+      reference_id: data?.id,
+      student_id: null,
+    });
 
-    // 🔔 ==========================
-    // NOTIFICATION (🔥 MAIN FIX)
-    // ==========================
-    const { error: notifError } = await supabase
-      .from("notifications")
-      .insert({
-        title: `📝 ${title} assignment uploaded`,
-        type: "assignment",
-        reference_id: data?.id,
-        student_id: null, // 🔥 FOR ALL STUDENTS
-      });
+    alert("✅ Assignment Created");
 
-    console.log("NOTIFICATION ERROR:", notifError);
-
-    alert("✅ Assignment Created Successfully");
-
-    // ✅ Reset form
     setTitle("");
     setDescription("");
     setOptionA("");
@@ -113,88 +84,133 @@ export default function CreateAssignment() {
   };
 
   return (
-    <div className="p-6 text-white max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Create Assignment</h1>
+    <div className="min-h-screen bg-gradient-to-br from-black via-neutral-950 to-black text-white p-8">
+      <div className="max-w-3xl mx-auto space-y-8">
 
-      <input
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="block mb-3 p-2 bg-gray-800 w-full rounded"
-      />
+        {/* HEADER */}
+        <div>
+          <h1 className="text-3xl font-bold">
+            Create Assignment
+          </h1>
+          <p className="text-gray-400 text-sm mt-1">
+            Design and assign questions to students
+          </p>
+        </div>
 
-      <textarea
-        placeholder="Question"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        className="block mb-3 p-2 bg-gray-800 w-full rounded"
-      />
+        {/* FORM */}
+        <div className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 space-y-6">
+          
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-purple-500/10 pointer-events-none" />
 
-      <input
-        placeholder="Option A"
-        value={optionA}
-        onChange={(e) => setOptionA(e.target.value)}
-        className="block mb-2 p-2 bg-gray-800 w-full rounded"
-      />
+          {/* TITLE */}
+          <input
+            placeholder="Assignment Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+          />
 
-      <input
-        placeholder="Option B"
-        value={optionB}
-        onChange={(e) => setOptionB(e.target.value)}
-        className="block mb-2 p-2 bg-gray-800 w-full rounded"
-      />
+          {/* QUESTION */}
+          <textarea
+            placeholder="Enter Question"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+          />
 
-      <input
-        placeholder="Option C"
-        value={optionC}
-        onChange={(e) => setOptionC(e.target.value)}
-        className="block mb-2 p-2 bg-gray-800 w-full rounded"
-      />
+          {/* OPTIONS */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { label: "A", value: optionA, set: setOptionA },
+              { label: "B", value: optionB, set: setOptionB },
+              { label: "C", value: optionC, set: setOptionC },
+              { label: "D", value: optionD, set: setOptionD },
+            ].map((opt) => (
+              <input
+                key={opt.label}
+                placeholder={`Option ${opt.label}`}
+                value={opt.value}
+                onChange={(e) => opt.set(e.target.value)}
+                className={`p-3 rounded-xl border outline-none transition
+                  ${
+                    correct === opt.label
+                      ? "bg-gradient-to-r from-indigo-500/30 to-purple-500/30 border-indigo-500 shadow-lg"
+                      : "bg-gradient-to-br from-neutral-900 to-neutral-800 border-white/10 hover:border-indigo-400 focus:border-indigo-500"
+                  }
+                `}
+              />
+            ))}
+          </div>
 
-      <input
-        placeholder="Option D"
-        value={optionD}
-        onChange={(e) => setOptionD(e.target.value)}
-        className="block mb-3 p-2 bg-gray-800 w-full rounded"
-      />
+          {/* CORRECT SELECT */}
+          <select
+            value={correct}
+            onChange={(e) => setCorrect(e.target.value)}
+            className="
+              w-full p-3 rounded-xl
+              bg-gradient-to-br from-neutral-900 to-neutral-800
+              border border-white/10
+              text-white
+              focus:border-indigo-500
+              focus:ring-2 focus:ring-indigo-500/30
+              outline-none
+              transition
+              appearance-none cursor-pointer
+            "
+          >
+            <option className="bg-neutral-900 text-white" value="A">Correct Answer: A</option>
+            <option className="bg-neutral-900 text-white" value="B">Correct Answer: B</option>
+            <option className="bg-neutral-900 text-white" value="C">Correct Answer: C</option>
+            <option className="bg-neutral-900 text-white" value="D">Correct Answer: D</option>
+          </select>
 
-      <select
-        value={correct}
-        onChange={(e) => setCorrect(e.target.value)}
-        className="block mb-3 p-2 bg-gray-800 w-full rounded"
-      >
-        <option value="A">Correct: A</option>
-        <option value="B">Correct: B</option>
-        <option value="C">Correct: C</option>
-        <option value="D">Correct: D</option>
-      </select>
+          {/* SUBJECT */}
+          <select
+            value={subjectId}
+            onChange={(e) => setSubjectId(e.target.value)}
+            className="
+              w-full p-3 rounded-xl
+              bg-gradient-to-br from-neutral-900 to-neutral-800
+              border border-white/10
+              text-white
+              focus:border-indigo-500
+              focus:ring-2 focus:ring-indigo-500/30
+              outline-none
+              transition
+              appearance-none cursor-pointer
+            "
+          >
+            <option className="bg-neutral-900 text-white" value="">
+              Select Subject
+            </option>
+            {subjects.map((s) => (
+              <option
+                key={s.id}
+                value={s.id}
+                className="bg-neutral-900 text-white"
+              >
+                {s.name}
+              </option>
+            ))}
+          </select>
 
-      <select
-        value={subjectId}
-        onChange={(e) => setSubjectId(e.target.value)}
-        className="block mb-3 p-2 bg-gray-800 w-full rounded"
-      >
-        <option value="">Select Subject</option>
-        {subjects.map((s) => (
-          <option key={s.id} value={s.id}>
-            {s.name}
-          </option>
-        ))}
-      </select>
+          {/* DUE DATE */}
+          <input
+            type="datetime-local"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            className="w-full p-3 rounded-xl bg-gradient-to-br from-neutral-900 to-neutral-800 border border-white/10 focus:border-indigo-500 outline-none"
+          />
 
-      <input
-        type="datetime-local"
-        value={dueDate}
-        onChange={(e) => setDueDate(e.target.value)}
-        className="block mb-4 p-2 bg-gray-800 w-full rounded"
-      />
-
-      <button
-        onClick={createAssignment}
-        className="bg-blue-600 px-4 py-2 rounded w-full hover:bg-blue-700"
-      >
-        Create Assignment
-      </button>
+          {/* BUTTON */}
+          <button
+            onClick={createAssignment}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 transition shadow-lg"
+          >
+            Create Assignment
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
