@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { useSidebar } from "@/context/SidebarContext";
 import ProfileMenu from "@/components/ProfileMenu";
 import NotificationDropdown from "@/components/NotificationDropdown";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation"; // ✅ added
 import { supabase } from "@/lib/supabase";
 
 export default function Navbar() {
   const { open } = useSidebar();
   const router = useRouter();
+  const pathname = usePathname(); // ✅ added
 
   const [role, setRole] = useState<string | null>(null);
 
@@ -33,6 +34,9 @@ export default function Navbar() {
 
   // ⏳ Prevent flicker
   if (!role) return null;
+
+  // 🔥 Show button only if NOT on dashboard
+  const showDashboardBtn = !pathname.startsWith("/dashboard");
 
   return (
     <header
@@ -71,7 +75,24 @@ export default function Navbar() {
 
       {/* RIGHT */}
       <div className="flex items-center gap-2 sm:gap-3">
-        
+
+        {/* 🔥 DASHBOARD BUTTON */}
+        {showDashboardBtn && (
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="
+              px-3 sm:px-4 py-2 rounded-xl
+              bg-gradient-to-r from-indigo-500 to-purple-600
+              text-white font-semibold
+              hover:scale-105 hover:shadow-lg
+              transition-all duration-200
+              text-sm sm:text-base
+            "
+          >
+           Back to  Dashboard
+          </button>
+        )}
+
         {/* ✅ ONLY FOR STUDENTS */}
         {role === "student" && (
           <button
