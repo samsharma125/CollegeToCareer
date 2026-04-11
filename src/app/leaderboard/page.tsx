@@ -2,58 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import LeaderboardContainer from "@/components/LeaderboardContainer";
 
 export default function LeaderboardPage() {
-  const [data, setData] = useState<any[]>([]);
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    fetchLeaderboard();
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data.user) {
+        setUserId(data.user.id);
+      }
+    };
+
+    getUser();
   }, []);
 
-  const fetchLeaderboard = async () => {
-    const { data, error } = await supabase
-      .from("student_results")
-      .select(`
-        score,
-        total,
-        student_id,
-        profiles(name)
-      `)
-      .order("score", { ascending: false });
-
-    console.log(data, error);
-
-    if (!error && data) {
-      setData(data);
-    }
-  };
-
   return (
-    <div className="p-6 text-white max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">🏆 Leaderboard</h1>
+    <div className="min-h-screen bg-black text-white p-6 sm:p-10">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6">
+        🏆 Leaderboard
+      </h1>
 
-      {data.map((user, index) => (
-        <div
-          key={index}
-          className={`p-4 mb-3 rounded flex justify-between ${
-            index === 0
-              ? "bg-yellow-700"
-              : index === 1
-              ? "bg-gray-500"
-              : index === 2
-              ? "bg-orange-700"
-              : "bg-gray-900"
-          }`}
-        >
-          <div>
-            #{index + 1} - {user.profiles?.name || "User"}
-          </div>
-
-          <div>
-            {user.score} / {user.total}
-          </div>
-        </div>
-      ))}
+      <LeaderboardContainer userId={userId} />
     </div>
   );
 }

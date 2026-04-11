@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSidebar } from "@/context/SidebarContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 // ICONS
 import {
@@ -20,8 +20,10 @@ import {
 export default function Sidebar() {
   const { isOpen, close } = useSidebar();
   const pathname = usePathname();
+  const router = useRouter();
 
   const [role, setRole] = useState<string | null>(null);
+  const [lastClick, setLastClick] = useState<number>(0);
 
   useEffect(() => {
     const loadRole = async () => {
@@ -40,10 +42,36 @@ export default function Sidebar() {
     loadRole();
   }, []);
 
+  // 🔥 POINT SYSTEM FUNCTION
+  const handleNavigation = async (link: string) => {
+    const now = Date.now();
+
+    // ⛔ prevent spam clicks (5 sec cooldown)
+    if (now - lastClick < 5000) {
+      close();
+      router.push(link);
+      return;
+    }
+
+    setLastClick(now);
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      await supabase.rpc("add_points", {
+        user_id: user.id,
+        pts: 2, // 🔥 points per click
+      });
+    }
+
+    close();
+    router.push(link);
+  };
+
   if (!role) return null;
 
   const linkStyle = (path: string) =>
-    `flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200
+    `flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200 cursor-pointer
      ${
        pathname === path
          ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30"
@@ -83,14 +111,17 @@ export default function Sidebar() {
         {/* NAV */}
         <nav className="flex flex-col gap-6 text-sm">
 
-          {/* COMMON */}
+          {/* GENERAL */}
           <div className="space-y-2">
             <p className="text-xs text-gray-400 uppercase px-2">General</p>
 
-            <Link href="/dashboard" onClick={close} className={linkStyle("/dashboard")}>
+            <div
+              onClick={() => handleNavigation("/dashboard")}
+              className={linkStyle("/dashboard")}
+            >
               <LayoutDashboard size={16} />
               Dashboard
-            </Link>
+            </div>
           </div>
 
           {/* STUDENT */}
@@ -98,25 +129,30 @@ export default function Sidebar() {
             <div className="space-y-2">
               <p className="text-xs text-gray-400 uppercase px-2">Learning</p>
 
-              <Link href="/study" onClick={close} className={linkStyle("/study")}>
+              <div onClick={() => handleNavigation("/study")} className={linkStyle("/study")}>
                 <BookOpen size={16} />
                 Study Materials
-              </Link>
+              </div>
 
-              <Link href="/ai" onClick={close} className={linkStyle("/ai")}>
+              <div onClick={() => handleNavigation("/ai")} className={linkStyle("/ai")}>
                 <Brain size={16} />
                 AI Assistant
-              </Link>
+              </div>
 
-              <Link href="/assignment" onClick={close} className={linkStyle("/assignment")}>
+              <div onClick={() => handleNavigation("/assignment")} className={linkStyle("/assignment")}>
                 <FileText size={16} />
                 Assignments
-              </Link>
+              </div>
 
-              <Link href="/resume-builder" onClick={close} className={linkStyle("/resume-builder")}>
+              <div onClick={() => handleNavigation("/resume-builder")} className={linkStyle("/resume-builder")}>
                 <FileText size={16} />
                 Resume Builder
-              </Link>
+              </div>
+
+              <div onClick={() => handleNavigation("/feedback")} className={linkStyle("/feedback")}>
+                <FileText size={16} />
+                Feedback
+              </div>
             </div>
           )}
 
