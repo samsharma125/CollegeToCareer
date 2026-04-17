@@ -5,6 +5,7 @@ import { useSidebar } from "@/context/SidebarContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { usePathname, useRouter } from "next/navigation";
+import { PlayCircle } from "lucide-react";
 
 // ICONS
 import {
@@ -124,37 +125,47 @@ export default function Sidebar() {
             </div>
           </div>
 
-          {/* STUDENT */}
           {role?.toLowerCase() === "student" && (
-            <div className="space-y-2">
-              <p className="text-xs text-gray-400 uppercase px-2">Learning</p>
+  <div className="space-y-2">
+    <p className="text-xs text-gray-400 uppercase px-2">Learning</p>
 
-              <div onClick={() => handleNavigation("/study")} className={linkStyle("/study")}>
-                <BookOpen size={16} />
-                Study Materials
-              </div>
+    <div onClick={() => handleNavigation("/study")} className={linkStyle("/study")}>
+      <BookOpen size={16} />
+      Study Materials
+    </div>
 
-              <div onClick={() => handleNavigation("/ai")} className={linkStyle("/ai")}>
-                <Brain size={16} />
-                AI Assistant
-              </div>
+    {/* ✅ LECTURES LINK */}
+    <div
+      onClick={() => handleNavigation("/lectures")}
+      className={linkStyle("/lectures")}
+    >
+      <PlayCircle size={16} />
+      Lectures
+    </div>
 
-              <div onClick={() => handleNavigation("/assignment")} className={linkStyle("/assignment")}>
-                <FileText size={16} />
-                Assignments
-              </div>
+    <div onClick={() => handleNavigation("/ai")} className={linkStyle("/ai")}>
+      <Brain size={16} />
+      AI Assistant
+    </div>
 
-              <div onClick={() => handleNavigation("/resume-builder")} className={linkStyle("/resume-builder")}>
-                <FileText size={16} />
-                Resume Builder
-              </div>
+    <div onClick={() => handleNavigation("/assignment")} className={linkStyle("/assignment")}>
+      <FileText size={16} />
+      Assignments
+    </div>
 
-              <div onClick={() => handleNavigation("/feedback")} className={linkStyle("/feedback")}>
-                <FileText size={16} />
-                Feedback
-              </div>
-            </div>
-          )}
+    <div onClick={() => handleNavigation("/resume-builder")} className={linkStyle("/resume-builder")}>
+      <FileText size={16} />
+      Resume Builder
+    </div>
+
+    <div onClick={() => handleNavigation("/feedback")} className={linkStyle("/feedback")}>
+      <FileText size={16} />
+      Feedback
+    </div>
+  </div>
+)}
+
+
 
           {/* TEACHER */}
           {role?.toLowerCase() === "teacher" && (
@@ -177,6 +188,11 @@ export default function Sidebar() {
               </Link>
 
               <Link href="/assignment" onClick={close} className={linkStyle("/assignment")}>
+                <FileText size={16} />
+                Created Assignments
+              </Link>
+
+                <Link href="/Lectures" onClick={close} className={linkStyle("/lectures")}>
                 <FileText size={16} />
                 Created Assignments
               </Link>
