@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { UploadCloud, FileText } from "lucide-react";
 
 type Subject = {
   id: string;
@@ -17,25 +18,18 @@ export default function TeacherStudyUpload() {
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Load subjects
   useEffect(() => {
     const loadSubjects = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("subjects")
         .select("id, name");
 
-      if (error) {
-        console.error(error);
-        alert(error.message);
-      } else {
-        setSubjects(data || []);
-      }
+      setSubjects(data || []);
     };
 
     loadSubjects();
   }, []);
 
-  // 🔹 Upload handler
   const handleUpload = async () => {
     if (!subjectId || !title) {
       alert("Please fill all required fields");
@@ -47,9 +41,6 @@ export default function TeacherStudyUpload() {
     let fileUrl: string | null = null;
 
     try {
-      // ==========================
-      // PDF UPLOAD
-      // ==========================
       if (type === "pdf") {
         if (!file) {
           alert("Please select a PDF file");
@@ -63,10 +54,7 @@ export default function TeacherStudyUpload() {
           .from("study-materials")
           .upload(filePath, file);
 
-        if (uploadError) {
-          console.error("UPLOAD ERROR:", uploadError);
-          throw uploadError;
-        }
+        if (uploadError) throw uploadError;
 
         const { data } = supabase.storage
           .from("study-materials")
@@ -75,9 +63,6 @@ export default function TeacherStudyUpload() {
         fileUrl = data.publicUrl;
       }
 
-      // ==========================
-      // INSERT MATERIAL
-      // ==========================
       const { data: material, error } = await supabase
         .from("study_materials")
         .insert({
@@ -90,37 +75,23 @@ export default function TeacherStudyUpload() {
         .select()
         .single();
 
-      if (error) {
-        console.error("DB ERROR:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log("MATERIAL INSERTED:", material);
+      await supabase.from("notifications").insert({
+        title: `📂 ${title} uploaded`,
+        type: "material",
+        reference_id: material?.id,
+        student_id: null,
+      });
 
-      // ==========================
-      // 🔔 INSERT NOTIFICATION
-      // ==========================
-      const { error: notifError } = await supabase
-        .from("notifications")
-        .insert({
-          title: `📂 ${title} uploaded`,
-          type: "material",
-          reference_id: material?.id,
-          student_id: null, // 🔥 IMPORTANT
-        });
+      alert("Uploaded successfully ✅");
 
-      console.log("NOTIFICATION ERROR:", notifError);
-
-      alert("Study material uploaded successfully ✅");
-
-      // RESET
       setTitle("");
       setFile(null);
       setQuestion("");
       setSubjectId("");
 
     } catch (err: any) {
-      console.error("FINAL ERROR:", err);
       alert(err.message || "Upload failed");
     }
 
@@ -128,70 +99,101 @@ export default function TeacherStudyUpload() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-8 text-white">
-      <h1 className="text-2xl font-bold mb-6">
-        📤 Upload Study Material
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-black via-neutral-950 to-black text-white p-8">
+      <div className="max-w-3xl mx-auto space-y-8">
 
-      {/* Subject */}
-      <select
-        value={subjectId}
-        onChange={(e) => setSubjectId(e.target.value)}
-        className="w-full p-3 mb-4 rounded bg-neutral-800 border border-neutral-700"
-      >
-        <option value="">Select Subject</option>
-        {subjects.map((s) => (
-          <option key={s.id} value={s.id}>
-            {s.name}
-          </option>
-        ))}
-      </select>
+        {/* HEADER */}
+        <div>
+          <h1 className="text-3xl font-bold">
+            Upload Study Material
+          </h1>
+          <p className="text-gray-400 text-sm mt-1">
+            Share resources with your students
+          </p>
+        </div>
 
-      {/* Title */}
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Title"
-        className="w-full p-3 mb-4 rounded bg-neutral-800 border border-neutral-700"
-      />
+        {/* FORM CARD */}
+        <div className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 space-y-5">
+          
+          {/* GLOW */}
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-purple-500/10 pointer-events-none" />
 
-      {/* Type */}
-      <select
-        value={type}
-        onChange={(e) => setType(e.target.value as "pdf" | "question")}
-        className="w-full p-3 mb-4 rounded bg-neutral-800 border border-neutral-700"
-      >
-        <option value="pdf">PDF</option>
-        <option value="question">Practice Question</option>
-      </select>
+          {/* SUBJECT */}
+          <select
+            value={subjectId}
+            onChange={(e) => setSubjectId(e.target.value)}
+            className="relative w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+          >
+            <option value="">Select Subject</option>
+            {subjects.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
 
-      {/* PDF */}
-      {type === "pdf" && (
-        <input
-          type="file"
-          accept=".pdf"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-          className="w-full mb-4"
-        />
-      )}
+          {/* TITLE */}
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter title"
+            className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+          />
 
-      {/* Question */}
-      {type === "question" && (
-        <textarea
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Enter practice question"
-          className="w-full p-3 mb-4 rounded bg-neutral-800 border border-neutral-700"
-        />
-      )}
+          {/* TYPE SELECTOR */}
+          <div className="flex gap-3">
+            {["pdf", "question"].map((t) => (
+              <button
+                key={t}
+                onClick={() => setType(t as any)}
+                className={`flex-1 py-2 rounded-xl border transition ${
+                  type === t
+                    ? "bg-gradient-to-r from-indigo-500 to-purple-600 border-transparent"
+                    : "border-white/10 bg-white/5 hover:bg-white/10"
+                }`}
+              >
+                {t.toUpperCase()}
+              </button>
+            ))}
+          </div>
 
-      <button
-        onClick={handleUpload}
-        disabled={loading}
-        className="w-full py-3 rounded bg-blue-600 hover:bg-blue-700 transition"
-      >
-        {loading ? "Uploading..." : "Upload"}
-      </button>
+          {/* PDF UPLOAD */}
+          {type === "pdf" && (
+            <label className="flex flex-col items-center justify-center gap-3 p-6 rounded-xl border border-dashed border-white/20 bg-white/5 cursor-pointer hover:bg-white/10 transition">
+              <UploadCloud className="w-6 h-6 text-indigo-400" />
+              <p className="text-sm text-gray-400">
+                {file ? file.name : "Click to upload PDF"}
+              </p>
+
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                className="hidden"
+              />
+            </label>
+          )}
+
+          {/* QUESTION */}
+          {type === "question" && (
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Enter practice question..."
+              className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:border-indigo-500 outline-none"
+            />
+          )}
+
+          {/* BUTTON */}
+          <button
+            onClick={handleUpload}
+            disabled={loading}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 transition shadow-lg"
+          >
+            {loading ? "Uploading..." : "Upload Material"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

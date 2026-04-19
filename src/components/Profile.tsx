@@ -111,129 +111,153 @@ export default function Profile() {
     return <p className="text-center mt-10 text-white">No profile found</p>;
 
   return (
-   <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center px-4">
-  <div className="w-full max-w-lg bg-neutral-900/80 backdrop-blur-xl border border-neutral-800 rounded-2xl shadow-2xl p-8 transition-all">
+  <div className="min-h-screen bg-gradient-to-br from-black via-neutral-950 to-black text-white px-4 py-10">
 
-    {/* 🔥 HEADER */}
-    <div className="flex items-center gap-4 mb-8">
-      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-        {profile.name?.charAt(0)?.toUpperCase() || "U"}
+    <div className="max-w-5xl mx-auto space-y-6">
+
+      {/* HEADER */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Profile</h1>
       </div>
 
-      <div>
-        <h2 className="text-2xl font-bold text-white tracking-wide">
-          {profile.name || "User"}
-        </h2>
-        <p className="text-sm text-neutral-400">{profile.email}</p>
-        <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-md capitalize">
-          {profile.role}
-        </span>
-      </div>
-    </div>
+      {/* GRID */}
+      <div className="grid md:grid-cols-3 gap-6">
 
-    <div className="border-t border-neutral-800 mb-6"></div>
+        {/* LEFT - PROFILE CARD */}
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
 
-    {/* ✏️ PROFILE SECTION */}
-    <div className="space-y-5">
-      <div>
-        <label className="text-sm text-neutral-400">Full Name</label>
-        {edit ? (
-          <input
-            className="mt-2 w-full bg-neutral-800 border border-neutral-700 text-white p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        ) : (
-          <div className="mt-2 p-3 bg-neutral-800 rounded-lg text-white">
-            {profile.name}
+          <div className="flex flex-col items-center text-center">
+
+            {/* AVATAR */}
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl font-bold mb-4">
+              {profile.name?.charAt(0)}
+            </div>
+
+            <h2 className="text-lg font-semibold">{profile.name}</h2>
+            <p className="text-sm text-gray-400">{profile.email}</p>
+
+            <span className="mt-2 text-xs px-3 py-1 bg-white/10 rounded-full capitalize">
+              {profile.role}
+            </span>
+
           </div>
-        )}
-      </div>
-
-      <div>
-        <label className="text-sm text-neutral-400">Email</label>
-        <div className="mt-2 p-3 bg-neutral-800 rounded-lg text-neutral-300">
-          {profile.email}
         </div>
-      </div>
 
-      <div>
-        <label className="text-sm text-neutral-400">Role</label>
-        <div className="mt-2 p-3 bg-neutral-800 rounded-lg text-blue-400 capitalize">
-          {profile.role}
-        </div>
-      </div>
+        {/* RIGHT SIDE */}
+        <div className="md:col-span-2 space-y-6">
 
-      {/* Buttons */}
-      <div className="pt-4">
-        {edit ? (
-          <div className="flex gap-3">
-            <button
-              onClick={updateProfile}
-              className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg transition"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => {
-                setEdit(false);
-                setName(profile.name);
-              }}
-              className="flex-1 bg-neutral-700 hover:bg-neutral-600 text-white py-2 rounded-lg transition"
-            >
-              Cancel
-            </button>
+          {/* PROFILE INFO */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
+
+            <h3 className="font-semibold mb-4">Profile Info</h3>
+
+            <div className="space-y-4">
+
+              <div>
+                <label className="text-sm text-gray-400">Name</label>
+
+                {edit ? (
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full mt-2 p-3 bg-white/5 border border-white/10 rounded-xl"
+                  />
+                ) : (
+                  <div className="mt-2 p-3 bg-white/5 border border-white/10 rounded-xl">
+                    {profile.name}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-400">Email</label>
+                <div className="mt-2 p-3 bg-white/5 border border-white/10 rounded-xl">
+                  {profile.email}
+                </div>
+              </div>
+
+              {/* BUTTONS */}
+              <div>
+                {edit ? (
+                  <div className="flex gap-3">
+                    <button
+                      onClick={updateProfile}
+                      className="flex-1 py-2 bg-green-500 rounded-xl"
+                    >
+                      Save
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setEdit(false);
+                        setName(profile.name);
+                      }}
+                      className="flex-1 py-2 bg-white/10 rounded-xl"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setEdit(true)}
+                    className="w-full py-2 bg-indigo-600 rounded-xl"
+                  >
+                    Edit Profile
+                  </button>
+                )}
+              </div>
+
+            </div>
           </div>
-        ) : (
-          <button
-            onClick={() => setEdit(true)}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition"
-          >
-            Edit Profile
-          </button>
-        )}
-      </div>
-    </div>
 
-    {/* 🔐 PASSWORD SUBSECTION */}
-    <div className="border-t border-neutral-800 mt-8 pt-6">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-white font-semibold">Security</h3>
-        <button
-          onClick={() => setShowPasswordSection((prev) => !prev)}
-          className="text-sm text-yellow-400 hover:underline transition"
-        >
-          {showPasswordSection ? "Close" : "Reset Password"}
-        </button>
-      </div>
+          {/* SECURITY */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
 
-      {showPasswordSection && (
-        <div className="space-y-4 animate-slideDown">
-          <input
-            type="password"
-            placeholder="New Password"
-            className="w-full bg-neutral-800 border border-neutral-700 text-white p-3 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none transition"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            className="w-full bg-neutral-800 border border-neutral-700 text-white p-3 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none transition"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-          <button
-            onClick={updatePassword}
-            className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg transition"
-          >
-            Update Password
-          </button>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold">Security</h3>
+
+              <button
+                onClick={() => setShowPasswordSection(!showPasswordSection)}
+                className="text-sm text-purple-400"
+              >
+                {showPasswordSection ? "Close" : "Reset Password"}
+              </button>
+            </div>
+
+            {showPasswordSection && (
+              <div className="space-y-3">
+
+                <input
+                  type="password"
+                  placeholder="New Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full p-3 bg-white/5 border border-white/10 rounded-xl"
+                />
+
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full p-3 bg-white/5 border border-white/10 rounded-xl"
+                />
+
+                <button
+                  onClick={updatePassword}
+                  className="w-full py-2 bg-green-500 rounded-xl"
+                >
+                  Update Password
+                </button>
+
+              </div>
+            )}
+          </div>
+
         </div>
-      )}
+      </div>
+
     </div>
   </div>
-</div>
-
-  );
+);
 }

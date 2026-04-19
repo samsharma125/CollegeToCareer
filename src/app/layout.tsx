@@ -7,6 +7,8 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import AuthGuard from "@/components/AuthGuard";
 import Loader from "@/components/Loader";
+// ✅ ADD THIS
+
 import "./global.css";
 
 export default function RootLayout({
@@ -23,7 +25,7 @@ export default function RootLayout({
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1200); // loader time
+    }, 1200);
 
     return () => clearTimeout(timer);
   }, []);
@@ -40,11 +42,16 @@ export default function RootLayout({
           ) : (
             <AuthGuard>
               <SidebarProvider>
+
                 <Navbar />
                 <Sidebar />
+
+           
+
                 <main className="max-w-7xl mx-auto px-6 py-10">
                   {children}
                 </main>
+
               </SidebarProvider>
             </AuthGuard>
           ))}

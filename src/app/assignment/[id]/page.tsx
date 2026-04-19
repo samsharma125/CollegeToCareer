@@ -214,17 +214,19 @@ export default function AssignmentPage() {
   }));
 
   return (
-    <div className="p-6 text-white max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6 text-center">
+  <div className="min-h-screen bg-gradient-to-br from-black via-neutral-950 to-black text-white p-6">
+    <div className="max-w-3xl mx-auto space-y-6">
+
+      <h1 className="text-2xl font-bold text-center">
         📝 MCQ Test
       </h1>
 
-      {/* START + OVERALL */}
+      {/* START */}
       {!testStarted && (
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={startTest}
-            className="bg-green-600 px-6 py-3 rounded"
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600"
           >
             ▶ Start Test
           </button>
@@ -234,30 +236,16 @@ export default function AssignmentPage() {
               fetchOverallAttempts();
               setShowOverall(!showOverall);
             }}
-            className="bg-indigo-600 px-6 py-3 rounded"
+            className="px-6 py-3 rounded-xl bg-white/5 border border-white/10"
           >
             📈 Overall
           </button>
         </div>
       )}
 
-      {/* OVERALL GRAPH */}
-      {!testStarted && showOverall && attemptHistory.length > 0 && (
-        <div className="mt-6 bg-gray-900 p-4 rounded">
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={attemptHistory}>
-              <XAxis dataKey="id" />
-              <YAxis />
-              <Tooltip />
-              <Line dataKey="score" stroke="#6366f1" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
       {/* TIMER */}
       {testStarted && !submitted && (
-        <div className="text-red-400 text-center mb-4">
+        <div className="text-center text-red-400 font-semibold">
           ⏱ {formatTime(timeLeft)}
         </div>
       )}
@@ -265,8 +253,11 @@ export default function AssignmentPage() {
       {/* QUESTIONS */}
       {testStarted &&
         questions.map((q, index) => (
-          <div key={q.id} className="mb-4 p-4 bg-gray-900 rounded">
-            <p>
+          <div
+            key={q.id}
+            className="p-5 rounded-2xl bg-white/5 border border-white/10"
+          >
+            <p className="mb-3">
               Q{index + 1}. {q.description}
             </p>
 
@@ -274,10 +265,10 @@ export default function AssignmentPage() {
               <button
                 key={opt}
                 onClick={() => handleSelect(q.id, opt)}
-                className={`block w-full mt-2 p-2 rounded ${
+                className={`block w-full mt-2 p-3 rounded-xl text-left ${
                   answers[q.id] === opt
-                    ? "bg-blue-600"
-                    : "bg-gray-800"
+                    ? "bg-gradient-to-r from-indigo-500 to-purple-600"
+                    : "bg-white/5 border border-white/10"
                 }`}
               >
                 {opt}. {q[`option_${opt.toLowerCase()}`]}
@@ -290,7 +281,7 @@ export default function AssignmentPage() {
       {testStarted && !submitted && (
         <button
           onClick={handleSubmit}
-          className="w-full bg-blue-600 py-3 rounded"
+          className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600"
         >
           Submit Test
         </button>
@@ -298,14 +289,15 @@ export default function AssignmentPage() {
 
       {/* RESULT */}
       {submitted && (
-        <div className="mt-4 bg-green-900 p-4 text-center rounded">
+        <div className="text-center p-4 rounded-xl bg-green-500/10 border border-green-500/30">
           🎯 Score: {score} / {questions.length}
         </div>
       )}
 
       {/* BUTTONS */}
       {submitted && (
-        <div className="flex flex-wrap gap-2 mt-4">
+        <div className="flex flex-wrap gap-3 mt-6">
+
           <button
             onClick={() => {
               setAnswers({});
@@ -316,14 +308,14 @@ export default function AssignmentPage() {
               setShowAnalysis(false);
               setShowAIReview(false);
             }}
-            className="bg-yellow-600 px-4 py-2 rounded"
+            className="px-4 py-2 rounded-xl bg-white/5 border border-white/10"
           >
             🔁 Re-attempt
           </button>
 
           <button
             onClick={() => setShowAnalysis(!showAnalysis)}
-            className="bg-purple-600 px-4 py-2 rounded"
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600"
           >
             📊 Analysis
           </button>
@@ -333,33 +325,43 @@ export default function AssignmentPage() {
               setShowAIReview(!showAIReview);
               if (!showAIReview) generateAIReview();
             }}
-            className="bg-blue-600 px-4 py-2 rounded"
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600"
           >
             🧠 AI Review
           </button>
+
         </div>
       )}
 
-      {/* ANALYSIS */}
+      {/* 📊 ANALYSIS */}
       {showAnalysis && (
-        <div className="mt-6 bg-gray-900 p-4 rounded">
-          <p>Accuracy: {accuracy.toFixed(1)}%</p>
+        <div className="mt-6 p-5 rounded-2xl bg-white/5 border border-white/10">
 
-          <ResponsiveContainer width="100%" height={200}>
+          <p className="mb-3 text-gray-300">
+            Accuracy: {accuracy.toFixed(1)}%
+          </p>
+
+          <ResponsiveContainer width="100%" height={220}>
             <LineChart data={graphData}>
               <XAxis dataKey="name" />
               <YAxis domain={[0, 1]} />
               <Tooltip />
-              <Line dataKey="score" />
+              <Line dataKey="score" stroke="#6366f1" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
+
         </div>
       )}
 
-      {/* AI REVIEW */}
+      {/* 🧠 AI REVIEW */}
       {showAIReview && (
-        <div className="mt-6 bg-gray-900 p-4 rounded">
-          {aiLoading && <p>🤖 Generating AI explanations...</p>}
+        <div className="mt-6 p-5 rounded-2xl bg-white/5 border border-white/10">
+
+          {aiLoading && (
+            <p className="text-gray-400">
+              🤖 Generating AI explanations...
+            </p>
+          )}
 
           {!aiLoading &&
             questions.map((q, i) => {
@@ -367,28 +369,31 @@ export default function AssignmentPage() {
               if (!r) return null;
 
               return (
-                <div key={q.id} className="mb-4 border-b pb-3">
+                <div key={q.id} className="mb-5 border-b pb-3 border-white/10">
                   <p className="font-semibold">
                     Q{i + 1}. {q.description}
                   </p>
 
                   <p className="text-sm text-gray-400">
                     Your Answer:{" "}
-                    <span className="text-blue-400">{r.user}</span>
+                    <span className="text-indigo-400">{r.user}</span>
                   </p>
 
                   <p className="text-sm text-green-400">
-                    Correct Answer: {r.correct}
+                    Correct: {r.correct}
                   </p>
 
-                  <p className="mt-2 text-white">
+                  <p className="mt-2 text-gray-200 text-sm">
                     💡 {r.explanation}
                   </p>
                 </div>
               );
             })}
+
         </div>
       )}
+
     </div>
-  );
+  </div>
+);
 }
